@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>112302064_HW6_1A2B</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #history {
+            margin-top: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .input-section {
+            margin-top: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>112302064_HW6_1A2B</h1>
+    <div class="input-section">
+        <input type="text" id="userInput" placeholder="請輸入4個不重複的數字">
+        <button onclick="submitGuess()">猜！</button>
+        <p id="errorMessage" class="error"></p>
+    </div>
+    <div id="history">
+        <h2>遊戲記錄：</h2>
+        <ul id="guessHistory"></ul>
+    </div>
+
+    <script>
+        function generateAnswer() {
+            var num1 = Math.floor(Math.random() * 10);
+            var num2 = Math.floor(Math.random() * 10);
+            while (num2 == num1) {
+                num2 = Math.floor(Math.random() * 10);
+            }
+            var num3 = Math.floor(Math.random() * 10);
+            while (num3 == num1 || num3 == num2) {
+                num3 = Math.floor(Math.random() * 10);
+            }
+            var num4 = Math.floor(Math.random() * 10);
+            while (num4 == num1 || num4 == num2 || num4 == num3) {
+                num4 = Math.floor(Math.random() * 10);
+            }
+
+            return [num1, num2, num3, num4].join('');
+        }
+
+        let answer = generateAnswer();
+        let counts = 0;
+
+        function submitGuess() {
+            const userInput = document.getElementById('userInput').value;
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = '';
+
+            if (!/^\d{4}$/.test(userInput)) {
+                errorMessage.textContent = '請輸入4個數字！';
+                return;
+            }
+
+            const uniqueDigits = new Set(userInput);
+            if (uniqueDigits.size !== 4) {
+                errorMessage.textContent = '數字不可重複！';
+                return;
+            }
+
+            counts++;
+            const result = checkAnswer(userInput, answer);
+            recordGuess(userInput, result);
+
+            if (result === '4A0B') {
+                alert(`答對了！總共作答 ${counts} 次。`);
+                resetGame();
+            }
+
+            document.getElementById('userInput').value = '';
+        }
+
+        function checkAnswer(userGuess, correctAnswer) {
+            let a = 0, b = 0;
+            for (let i = 0; i < userGuess.length; i++) {
+                if (userGuess[i] === correctAnswer[i]) {
+                    a++;
+                } else if (correctAnswer.includes(userGuess[i])) {
+                    b++;
+                }
+            }
+            return `${a}A${b}B`;
+        }
+
+        function recordGuess(guess, result) {
+            const history = document.getElementById('guessHistory');
+            const newEntry = document.createElement('li');
+            newEntry.textContent = `第${counts}次：${guess} -> ${result}`;
+            history.appendChild(newEntry);
+        }
+
+        function resetGame() {
+            answer = generateAnswer();
+            counts = 0;
+            document.getElementById('guessHistory').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
